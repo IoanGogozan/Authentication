@@ -4,6 +4,9 @@ var db = require("../models");
 var UserService = require("../services/UserService")
 var userService = new UserService(db);
 var authMiddlewares = require("./authMiddlewares");
+var { canSeeUserList, canSeeUserDetails, checkIfAuthorized, isAdmin } = require("./authMiddlewares")
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
 
 /* GET users listing. */
 router.get('/:userId', authMiddlewares.canSeeUserDetails, async function(req, res, next) {
@@ -11,7 +14,16 @@ router.get('/:userId', authMiddlewares.canSeeUserDetails, async function(req, re
   res.render('userDetails', { user: user });
 });
 
+router.get('/', canSeeUserList, async function(req, res, next) {
+  const users = await userService.getAll();
+  res.render('users', {users: users});
+});
 
+router.delete('/', checkIfAuthorized, isAdmin, jsonParser, async function(req, res, next) {
+  let id = req.body.id;
+  await userService.deleteUser(id);
+  res.end()
+});
 
 
 module.exports = router;

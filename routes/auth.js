@@ -35,10 +35,6 @@ passport.deserializeUser(function(user, cb) {
 
 var router = express.Router();
 
-/**
-router.get('/login', function(req, res, next) {
-  res.render('login');
-});**/
 
 router.get('/login', function(req, res, next) {
   const username = req.user?.username;
